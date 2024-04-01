@@ -1,6 +1,7 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
 
 namespace ServerTime
 {
@@ -28,7 +29,7 @@ namespace ServerTime
                     await socket.ReceiveFromAsync(buff, SocketFlags.None, point).ContinueWith(t =>
                     {
                         SocketReceiveFromResult res = t.Result;
-                        timer1.Interval += 1000;                       
+                        timer1.Interval += 1000;
                         string timer = Encoding.Default.GetString(buff);
                         label1.BeginInvoke(new Action<string>(s => { label1.Text = s; }), timer);
                     });
