@@ -17,21 +17,19 @@ namespace ClientTime
             InitializeComponent();
             udpClient = new UdpClient();
             serverEndPoint = new IPEndPoint(IPAddress.Parse("192.168.56.1"), 1040);
-            //Process.Start("ServerTime.exe");
+            Process.Start("ServerTime.exe");
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string time = $"{textBox1.Text}:{textBox2.Text}:{textBox3.Text}";
-            byte[] sendBytes = Encoding.Default.GetBytes(time);
-            udpClient.Send(sendBytes, sendBytes.Length, serverEndPoint);
-        }
-
+            timer1.Tick += timer1_Tick;
+            timer1.Start();
+        }      
         private void timer1_Tick(object sender, EventArgs e)
         {
-            string time = $"{DateTime.Now:HH:mm:ss}";
-            byte[] sendBytes = Encoding.Default.GetBytes(time);
-            udpClient.Send(sendBytes, sendBytes.Length, serverEndPoint);
+            string time = $"{textBox1.Text}:{textBox2.Text}:{textBox3.Text}";
+            byte[]sendBuff = Encoding.Default.GetBytes(time);
+            udpClient.Send(sendBuff, sendBuff.Length, serverEndPoint);
         }
     }
 }

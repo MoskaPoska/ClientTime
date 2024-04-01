@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             textBox1 = new TextBox();
             textBox2 = new TextBox();
             textBox3 = new TextBox();
@@ -35,6 +36,7 @@
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
+            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // textBox1
@@ -109,7 +111,6 @@
             Controls.Add(textBox1);
             Name = "Form1";
             Text = "Client";
-            
             ResumeLayout(false);
             PerformLayout();
         }
@@ -123,5 +124,6 @@
         private Label label1;
         private Label label2;
         private Label label3;
+        private System.Windows.Forms.Timer timer1;
     }
 }

@@ -1,5 +1,6 @@
-using System.Net.Sockets;
+using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
@@ -14,28 +15,52 @@ namespace ServerTime
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Создаем сокет
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            // Устанавливаем IP-адрес и порт для прослушивания
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 1040);
+            socket.Bind(endPoint);
 
-            Task.Run(async () =>
+            // Запускаем прослушивание входящих пакетов
+            Task.Run(() =>
             {
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.IP);
-                IPAddress address = Dns.GetHostAddresses(Dns.GetHostName())[2];
-                IPEndPoint endPoint = new IPEndPoint(address, 1040);
-                socket.Bind(endPoint);
-                EndPoint point = new IPEndPoint(IPAddress.Any, 1040);
-
-                byte[] buff = new byte[1024];
-                do
+                while (true)
                 {
-                    await socket.ReceiveFromAsync(buff, SocketFlags.None, point).ContinueWith(t =>
+                    try
                     {
-                        SocketReceiveFromResult res = t.Result;
-                        timer1.Interval += 1000;
-                        string timer = Encoding.Default.GetString(buff);
-                        label1.BeginInvoke(new Action<string>(s => { label1.Text = s; }), timer);
-                    });
-                } while (true);
+                        // Получаем данные от клиента
+                        EndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                        byte[] buff = new byte[1024];
+                        int bytesRead = socket.ReceiveFrom(buff, ref clientEndPoint);
+
+                        // Преобразуем полученные данные в строку
+                        string time = Encoding.Default.GetString(buff, 0, bytesRead);
+
+                        // Обновляем метку с временем на форме
+                        UpdateTimeLabel(time);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка при получении данных: {ex.Message}");
+                    }
+                }
             });
+
+            // Устанавливаем заголовок окна
             Text = "Server is working";
+        }
+
+        private void UpdateTimeLabel(string time)
+        {
+            // Обновляем метку с временем на форме
+            if (label1.InvokeRequired)
+            {
+                label1.Invoke(new Action<string>(UpdateTimeLabel), time);
+            }
+            else
+            {
+                label1.Text = time;
+            }
         }
     }
 }
